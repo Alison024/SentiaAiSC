@@ -55,5 +55,14 @@ describe("PaymentCheck", async () => {
     await time.increase(MONTH);
     expect(await payment.isUserValid(owner.address)).to.be.false;
   });
-  it("Must must deposit price per 3 months correctly", async () => {});
+  it("Must must deposit price per 3 months correctly", async () => {
+    const toDeposit = pricePerMonth * 3n;
+    await payment.deposit(0, { value: toDeposit });
+    expect(await ethers.provider.getBalance(payment.target)).to.be.equal(
+      toDeposit
+    );
+    expect(await payment.isUserValid(owner.address)).to.be.true;
+    await time.increase(MONTH * 3);
+    expect(await payment.isUserValid(owner.address)).to.be.false;
+  });
 });
